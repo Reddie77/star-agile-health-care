@@ -32,5 +32,21 @@ pipeline {
         sh 'docker push reddie777/healthcare:1.0'
             }
       }
+    stage('AWS-Login') {
+      steps {
+        withCredentials([aws(accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'awslogin', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+         }
+      }
+    }
+    stage('setting the Kubernetes Cluster') {
+      steps {
+        dir('terraform_files'){
+          sh 'terraform init'
+          sh 'terraform validate'
+          sh 'terraform apply --auto-approve'
+          sh 'sleep 20'
+        }
+      }
+    }  
   }
 }
