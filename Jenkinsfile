@@ -1,17 +1,20 @@
 pipeline {
   agent any
+          
   stages {
     stage('Git Checkout') {
       steps {
+        echo 'This stage is to clone the repo from github'
         git branch: 'master', url: 'https://github.com/Reddie77/star-agile-health-care.git'
                         }
             }
-  stage('Create Package') {
+    stage('Create Package') {
       steps {
         echo 'This stage will compile, test, package my application'
         sh 'mvn package'
                           }
             }
+    
     stage('Create Docker Image') {
       steps {
         echo 'This stage will Create a Docker image'
@@ -31,7 +34,7 @@ pipeline {
         echo 'This stage will push my new image to the dockerhub'
         sh 'docker push reddie777/healthcare:1.0'
             }
-      }
+      } 
     stage('AWS-Login') {
       steps {
         withCredentials([aws(accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'awslogin', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
@@ -47,10 +50,10 @@ pipeline {
           sh 'sleep 20'
         }
       }
-    }  
+    }
     stage('deploy kubernetes'){
-      steps{
-  sh 'sudo chmod 600 ./terraform_files/mumbai.pem'    
+steps{
+  sh 'sudo chmod 600 ./terraform_files/sir.pem'    
   sh 'minikube start'
   sh 'sleep 30'
   sh 'sudo scp -o StrictHostKeyChecking=no -i ./terraform_files/sir.pem deployment.yml ubuntu@172.31.17.230:/home/ubuntu/'
@@ -67,3 +70,5 @@ script{
 }
   }
 }
+
+    
